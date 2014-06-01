@@ -76,9 +76,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		$title = Title::newFromText( $data['title'] );
 		if ( !$title ) {
 			return Status::newFatal( 'massmessage-manage-invalidtitle' );
-		} else if ( !$title->userCan( 'edit' )
-			|| !$title->exists() && !$title->userCan( 'create' )
-		) {
+		} else if ( $title->exists() && $this->titleText === '' ) {
+			return Status::newFatal( 'massmessage-manage-exists' );
+		} else if ( !$title->userCan( 'edit' ) || !$title->exists() && !$title->userCan( 'create' )	) {
 			return Status::newFatal( 'massmessage-manage-nopermission' );
 		}
 
