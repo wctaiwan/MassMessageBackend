@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"wctaiwan"
+		]
+	},
+	"contenthandlertest": "Content Handler Test",
+	"contenthandlertest-desc": "A basic extension utilizing ContentHandler",
+	"contenthandlertest-message": "This page uses TestContentModel.",
+	"contenthandlertest-legend": "Add a page using the test content model",
+	"contenthandlertest-title": "Title:",
+	"contenthandlertest-content": "Content:",
+	"contenthandlertest-invalidtitle": "The title is invalid.",
+	"contenthandlertest-titleexists": "The title already exists.",
+	"contenthandlertest-nopermission": "You do not have permission to create a page at the title.",
+	"contenthandlertest-editsummary": "Created with ContentHandlerTest",
+	"contenthandlertest-success": "The page has been successfully created."
+}
