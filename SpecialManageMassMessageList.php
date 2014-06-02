@@ -57,8 +57,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	}
 
 	protected function alterForm( HTMLForm $form ) {
-		// Hide the form if the title is invalid.
-		if ( !$this->isTitleValid ) {
+		if ( $this->isTitleValid ) {
+			$form->setWrapperLegendMsg( 'managemassmessagelist' );
+		} else { // Hide the form if the title is invalid.
 			$form->setWrapperLegend( false );
 			$form->suppressDefaultSubmit( true );
 		}

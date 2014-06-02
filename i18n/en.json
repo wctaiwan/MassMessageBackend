@@ -4,15 +4,12 @@
 			"wctaiwan"
 		]
 	},
-	"contenthandlertest": "Content Handler Test",
-	"contenthandlertest-desc": "A basic extension utilizing ContentHandler",
-	"contenthandlertest-message": "This page uses TestContentModel.",
-	"contenthandlertest-legend": "Add a page using the test content model",
-	"contenthandlertest-title": "Title:",
-	"contenthandlertest-content": "Content:",
-	"contenthandlertest-invalidtitle": "The title is invalid.",
-	"contenthandlertest-titleexists": "The title already exists.",
-	"contenthandlertest-nopermission": "You do not have permission to create a page at the title.",
-	"contenthandlertest-editsummary": "Created with ContentHandlerTest",
-	"contenthandlertest-success": "The page has been successfully created."
+	"managemassmessagelist": "Manage MassMessage list",
+	"massmessage-manage-title": "Title:",
+	"massmessage-manage-content": "Content:",
+	"massmessage-manage-header": "Use this form to create or modify delivery lists for the MassMessage extension. List one title per line, and use title@domain (e.g. User talk:Example@en.wikipedia.org) to specify a page on a different wiki, if cross-wiki delivery is enabled.",
+	"massmessage-manage-invalidtitle": "The specified title is invalid.",
+	"massmessage-manage-exists": "A page already exists at the specified title.",
+	"massmessage-manage-nopermission": "You do not have permission to create or edit the list.",
+	"massmessage-manage-editsummary": "Updating MassMessage list"
 }
