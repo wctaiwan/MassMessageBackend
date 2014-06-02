@@ -20,7 +20,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			if ( $title !== null && $title->exists()
 				&& $title->hasContentModel( 'MassMessageListContent' )
 			) {
-				$this->titleText = $title->getText(); // Use the canonical form.
+				$this->titleText = $title->getPrefixedText(); // Use the canonical form.
 				$this->isTitleValid = true;
 			} else {
 				$this->isTitleValid = false;
