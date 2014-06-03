@@ -99,4 +99,42 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	public function onSuccess() {
 		// No-op: We have already redirected.
 	}
+
+	protected function convertToJson( $textInput ) {
+		$lines = array_filter( explode( '\n', $textInput ), 'trim' ); // Array of non-empty lines
+
+		$targets = array();
+		foreach ( $lines as $line ) {
+			$delimiterPos = strrpos( $line, '@' );
+			if ( $delimiterPos !== false ) {
+				$titleText = substr( $line, 0, $delimiterPos );
+				$domain = strtolower( substr( $line, $delimiterPos ) );
+			} else {
+				$titleText = $line;
+				$domain = null;
+			}
+
+			$title = Title::newFromText( $titleText );
+			if ( !$title ) {
+				continue; // Silently skip invalid titles.
+			}
+			$titleText = $title->getPrefixedText(); // Use the canonical form.
+
+			if ( $domain ) {
+				$targets[] = array( 'title' => $titleText, 'domain' => $domain );
+			} else {
+				$targets[] = array( 'title' => $titleText );
+			}
+		}
+		$targets = array_map( 'unserialize', array_unique( 'serialize', $targets ) ); // Remove duplicates.
+		usort( $targets, 'compareTargets' );
+
+
+	}
+
+	protected function compareTargets( $a, $b ) {
+	}
+
+	protected function convertFromJson( $jsonInput ) {
+	}
 }
