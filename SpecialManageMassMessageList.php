@@ -4,7 +4,6 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 
 	protected $titleText;
 	protected $isTitleValid;
-	protected $redirectUrl;
 
 	public function __construct() {
 		parent::__construct( 'ManageMassMessageList' );
@@ -91,13 +90,13 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			$content,
 			$this->msg( 'massmessage-manage-editsummary' )->text()
 		);
-		if ( $result->isGood() ) {
-			$this->redirectTarget = $title->getFullUrl();
+		if ( $result->isOK() ) {
+			$this->getOutput()->redirect( $title->getFullUrl() );
 		}
 		return $result;
 	}
 
 	public function onSuccess() {
-		$this->getOutput()->redirect( $this->redirectTarget );
+		// No-op: We have already redirected.
 	}
 }
