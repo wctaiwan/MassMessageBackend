@@ -11,5 +11,7 @@
 	"massmessage-manage-invalidtitle": "The specified title is invalid.",
 	"massmessage-manage-exists": "A page already exists at the specified title.",
 	"massmessage-manage-nopermission": "You do not have permission to create or edit the list.",
-	"massmessage-manage-editsummary": "Updating MassMessage list"
+	"massmessage-manage-editsummary": "Updating MassMessage list",
+	"massmessage-manage-tojsonerror": "The list could not be encoded for storage.",
+	"massmassage-manage-fromjsonerror": "(The current list could not be parsed.)"
 }

@@ -49,7 +49,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 
 				// Set the default content.
 				$page = WikiPage::factory( Title::newFromText( $this->titleText ) );
-				$fields['content']['default'] = $page->getContent()->getNativeData();
+				$fields['content']['default'] = $this->convertFromJson(
+					$page->getContent()->getNativeData()
+				);
 			}
 		}
 		return $fields;
@@ -83,10 +85,13 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			return Status::newFatal( 'massmessage-manage-nopermission' );
 		}
 
-		$content = new MassMessageListContent( $data['content'] );
+		$jsonText = $this->convertToJson( $data['content'] );
+		if ( !$jsonText ) {
+			return Status::newFatal( 'massmessage-manage-tojsonerror' );
+		}
+		$content = new MassMessageListContent( $jsonText );
 
-		$page = WikiPage::factory( $title );
-		$result = $page->doEditContent(
+		$result = WikiPage::factory( $title )->doEditContent(
 			$content,
 			$this->msg( 'massmessage-manage-editsummary' )->text()
 		);
@@ -101,14 +106,14 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	}
 
 	protected function convertToJson( $textInput ) {
-		$lines = array_filter( explode( '\n', $textInput ), 'trim' ); // Array of non-empty lines
+		$lines = array_filter( explode( "\n", $textInput ), 'trim' ); // Array of non-empty lines
 
 		$targets = array();
 		foreach ( $lines as $line ) {
 			$delimiterPos = strrpos( $line, '@' );
 			if ( $delimiterPos !== false ) {
 				$titleText = substr( $line, 0, $delimiterPos );
-				$domain = strtolower( substr( $line, $delimiterPos ) );
+				$domain = strtolower( substr( $line, $delimiterPos+1 ) );
 			} else {
 				$titleText = $line;
 				$domain = null;
@@ -126,15 +131,41 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 				$targets[] = array( 'title' => $titleText );
 			}
 		}
-		$targets = array_map( 'unserialize', array_unique( 'serialize', $targets ) ); // Remove duplicates.
-		usort( $targets, 'compareTargets' );
 
+		// Remove duplicates and sort.
+		$targets = array_map( 'unserialize', array_unique( array_map( 'serialize', $targets ) ) );
+		usort( $targets, array( $this, 'compareTargets' ) );
 
+		return FormatJson::encode( $targets );
 	}
 
 	protected function compareTargets( $a, $b ) {
+		if ( !array_key_exists( 'domain', $a ) && array_key_exists( 'domain', $b ) ) {
+			return -1;
+		} else if ( array_key_exists( 'domain', $a ) && !array_key_exists( 'domain', $b ) ) {
+			return 1;
+		} else if ( array_key_exists( 'domain', $a ) && array_key_exists( 'domain', $b )
+			&& $a['domain'] !== $b['domain']
+		) {
+			return strcmp( $a['domain'], $b['domain'] );
+		} else {
+			return strcmp( $a['title'], $b['title'] );
+		}
 	}
 
 	protected function convertFromJson( $jsonInput ) {
+		$targets = FormatJson::decode( $jsonInput, true );
+		if ( !$targets ) {
+			return $this->msg( 'massmassage-manage-fromjsonerror' )->escaped(); //
+		}
+		$lines = array();
+		foreach ( $targets as $target ) {
+			if ( array_key_exists( 'domain', $target ) ) {
+				$lines[] = $target['title'] . '@' . $target['domain'];
+			} else {
+				$lines[] = $target['title'];
+			}
+		}
+		return implode( "\n", $lines );
 	}
 }
