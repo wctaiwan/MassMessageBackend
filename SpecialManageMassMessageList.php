@@ -48,7 +48,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 				$fields['title']['disabled'] = true;
 
 				// Set the default content.
-				$fields['content']['default'] = $this->convertFromJson(
+				$fields['content']['default'] = self::convertFromJson(
 					Revision::newFromTitle(
 						Title::newFromText( $this->titleText )
 					)->getContent()->getNativeData()
@@ -82,11 +82,11 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			return Status::newFatal( 'massmessage-manage-invalidtitle' );
 		} else if ( $title->exists() && $this->titleText === '' ) {
 			return Status::newFatal( 'massmessage-manage-exists' );
-		} else if ( !$title->userCan( 'edit' ) || !$title->exists() && !$title->userCan( 'create' )	) {
+		} else if ( !$title->userCan( 'edit' ) || !$title->exists() && !$title->userCan( 'create' ) ) {
 			return Status::newFatal( 'massmessage-manage-nopermission' );
 		}
 
-		$jsonText = $this->convertToJson( $data['content'] );
+		$jsonText = self::convertToJson( $data['content'] );
 		if ( !$jsonText ) {
 			return Status::newFatal( 'massmessage-manage-tojsonerror' );
 		}
@@ -106,7 +106,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		// No-op: We have already redirected.
 	}
 
-	protected function convertToJson( $textInput ) {
+	protected static function convertToJson( $textInput ) {
 		$lines = array_filter( explode( "\n", $textInput ), 'trim' ); // Array of non-empty lines
 
 		$targets = array();
@@ -135,12 +135,12 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 
 		// Remove duplicates and sort.
 		$targets = array_map( 'unserialize', array_unique( array_map( 'serialize', $targets ) ) );
-		usort( $targets, array( $this, 'compareTargets' ) );
+		usort( $targets, 'self::compareTargets' );
 
 		return FormatJson::encode( $targets );
 	}
 
-	protected function compareTargets( $a, $b ) {
+	protected static function compareTargets( $a, $b ) {
 		if ( !array_key_exists( 'domain', $a ) && array_key_exists( 'domain', $b ) ) {
 			return -1;
 		} else if ( array_key_exists( 'domain', $a ) && !array_key_exists( 'domain', $b ) ) {
@@ -154,7 +154,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		}
 	}
 
-	protected function convertFromJson( $jsonInput ) {
+	protected static function convertFromJson( $jsonInput ) {
 		$targets = FormatJson::decode( $jsonInput, true );
 		if ( !$targets ) {
 			// Use an error message as the content if the page isn't valid JSON.
