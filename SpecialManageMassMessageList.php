@@ -48,9 +48,10 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 				$fields['title']['disabled'] = true;
 
 				// Set the default content.
-				$page = WikiPage::factory( Title::newFromText( $this->titleText ) );
 				$fields['content']['default'] = $this->convertFromJson(
-					$page->getContent()->getNativeData()
+					Revision::newFromTitle(
+						Title::newFromText( $this->titleText )
+					)->getContent()->getNativeData()
 				);
 			}
 		}
@@ -156,7 +157,8 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	protected function convertFromJson( $jsonInput ) {
 		$targets = FormatJson::decode( $jsonInput, true );
 		if ( !$targets ) {
-			return $this->msg( 'massmassage-manage-fromjsonerror' )->escaped(); //
+			// Use an error message as the content if the page isn't valid JSON.
+			return $this->msg( 'massmassage-manage-fromjsonerror' )->escaped();
 		}
 		$lines = array();
 		foreach ( $targets as $target ) {
