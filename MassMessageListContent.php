@@ -6,12 +6,8 @@ class MassMessageListContent extends TextContent {
 		parent::__construct( $text, 'MassMessageListContent' );
 	}
 
-	protected function getHtml() {
-
-	}
-
-	protected function validate() {
-		$targets = FormatJson::decode( $this->getNativeData(), true );
+	public function validate() {
+		$targets = $this->getTargets();
 		if ( !$targets ) {
 			return false;
 		}
@@ -21,5 +17,13 @@ class MassMessageListContent extends TextContent {
 			}
 		}
 		return true;
+	}
+
+	protected function getHtml() {
+
+	}
+
+	protected function getTargets() {
+		return FormatJson::decode( $this->getNativeData(), true );
 	}
 }
