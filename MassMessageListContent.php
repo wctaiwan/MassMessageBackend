@@ -12,7 +12,7 @@ class MassMessageListContent extends TextContent {
 			return false;
 		}
 		foreach ( $targets as $target ) {
-			if ( !array_key_exists( 'title', $target ) {
+			if ( !array_key_exists( 'title', $target ) ) {
 				return false;
 			}
 		}
@@ -20,7 +20,9 @@ class MassMessageListContent extends TextContent {
 	}
 
 	protected function getHtml() {
-
+		if ( !$this->validate() ) {
+			return '<p class="error">' . wfMessage( 'massmessage-content-invalid' )->text() . '</p>';
+		}
 	}
 
 	protected function getTargets() {
