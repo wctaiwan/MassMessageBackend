@@ -106,6 +106,23 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		// No-op: We have already redirected.
 	}
 
+	protected function convertFromJson( $jsonInput ) {
+		$targets = FormatJson::decode( $jsonInput, true );
+		if ( $targets === null ) {
+			// Use an error message as the content if the page isn't valid JSON.
+			return $this->msg( 'massmassage-manage-fromjsonerror' )->escaped();
+		}
+		$lines = array();
+		foreach ( $targets as $target ) {
+			if ( array_key_exists( 'domain', $target ) ) {
+				$lines[] = $target['title'] . '@' . $target['domain'];
+			} else {
+				$lines[] = $target['title'];
+			}
+		}
+		return implode( "\n", $lines );
+	}
+
 	protected static function convertToJson( $textInput ) {
 		$lines = array_filter( explode( "\n", $textInput ), 'trim' ); // Array of non-empty lines
 
@@ -152,22 +169,5 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		} else {
 			return strcmp( $a['title'], $b['title'] );
 		}
-	}
-
-	protected static function convertFromJson( $jsonInput ) {
-		$targets = FormatJson::decode( $jsonInput, true );
-		if ( !$targets ) {
-			// Use an error message as the content if the page isn't valid JSON.
-			return $this->msg( 'massmassage-manage-fromjsonerror' )->escaped();
-		}
-		$lines = array();
-		foreach ( $targets as $target ) {
-			if ( array_key_exists( 'domain', $target ) ) {
-				$lines[] = $target['title'] . '@' . $target['domain'];
-			} else {
-				$lines[] = $target['title'];
-			}
-		}
-		return implode( "\n", $lines );
 	}
 }
