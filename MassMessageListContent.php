@@ -8,7 +8,7 @@ class MassMessageListContent extends TextContent {
 
 	public function validate() {
 		$targets = $this->getTargets();
-		if ( !$targets ) {
+		if ( $targets === null ) {
 			return false;
 		}
 		foreach ( $targets as $target ) {
