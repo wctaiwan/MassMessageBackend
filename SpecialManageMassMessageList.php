@@ -53,10 +53,10 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 				$fields['title']['disabled'] = true;
 
 				// Set the default content.
-				$fields['content']['default'] = self::convertFromJson(
+				$fields['content']['default'] = self::parseTargets(
 					Revision::newFromTitle(
 						Title::newFromText( $this->titleText )
-					)->getContent()->getNativeData()
+					)->getContent()->getTargets()
 				);
 			}
 		}
@@ -111,11 +111,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		// No-op: We have already redirected.
 	}
 
-	protected function convertFromJson( $jsonInput ) {
-		$targets = FormatJson::decode( $jsonInput, true );
+	protected static function parseTargets( $targets ) {
 		if ( $targets === null ) {
-			// Use an error message as the content if the page isn't valid JSON.
-			return $this->msg( 'massmassage-manage-fromjsonerror' )->escaped();
+			return '';
 		}
 		$lines = array();
 		foreach ( $targets as $target ) {
