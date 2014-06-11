@@ -2,16 +2,24 @@
 
 class MassMessageListContent extends TextContent {
 
+	protected $description;
+
+	protected $targets;
+
+	protected $decoded;
+
 	public function __construct( $text ) {
 		parent::__construct( $text, 'MassMessageListContent' );
 	}
 
 	public function validate() {
-		$targets = $this->getTargets();
-		if ( $targets === null ) {
+		if ( !$this->decoded ) {
+			$this->decode();
+		}
+		if ( $this->description === null || $this->targets === null ) {
 			return false;
 		}
-		foreach ( $targets as $target ) {
+		foreach ( $this->targets as $target ) {
 			if ( !array_key_exists( 'title', $target ) ) {
 				return false;
 			}
@@ -19,6 +27,32 @@ class MassMessageListContent extends TextContent {
 		return true;
 	}
 
+	public function getDescription() {
+		if ( !$this->decoded ) {
+			$this->decode();
+		}
+		return $this->description;
+	}
+
+	public function getTargets() {
+		if ( !$this->decoded ) {
+			$this->decode();
+		}
+		return $this->targets;
+	}
+
+	protected function decode() {
+		if ( $this->decoded ) {
+			return;
+		}
+		$data = FormatJson::decode( $this->getNativeData(), true );
+		$this->description = array_key_exists( 'description', $data ) ?
+			$data['description'] : null;
+		$this->targets = array_key_exists( 'targets', $data ) ? $data['targets'] : null;
+		$this->decoded = true;
+	}
+
+	//TODO: Change getHtml and the special page to fit the new schema
 	protected function getHtml() {
 		if ( !$this->validate() ) {
 			return '<p class="error">' . wfMessage( 'massmessage-content-invalid' )->text() . '</p>';
@@ -58,9 +92,5 @@ class MassMessageListContent extends TextContent {
 		}
 
 		return Xml::buildTable( $rows, array( 'class' => 'wikitable' ), $headers, false );
-	}
-
-	protected function getTargets() {
-		return FormatJson::decode( $this->getNativeData(), true );
 	}
 }

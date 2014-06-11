@@ -12,7 +12,7 @@ class MassMessageListContentHandler extends TextContentHandler {
 	}
 
 	public function makeEmptyContent() {
-		return new MassMessageListContent( '[]' );
+		return new MassMessageListContent( '{"description":"","targets":[]}' );
 	}
 
 }

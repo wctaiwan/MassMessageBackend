@@ -36,9 +36,14 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 				'type' => 'text',
 				'label-message' => 'massmessage-manage-title',
 			);
+			$fields['description'] = array(
+				'type' => 'textarea',
+				'rows' => 5,
+				'label-message' => 'massmessage-manage-description',
+			);
 			$fields['content'] = array(
 				'type' => 'textarea',
-				'label-message' => 'massmessage-manage-content'
+				'label-message' => 'massmessage-manage-content',
 			);
 
 			// If modifying an existing list
