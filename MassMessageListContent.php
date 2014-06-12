@@ -29,11 +29,11 @@ class MassMessageListContent extends TextContent {
 		if ( !$this->decoded ) {
 			$this->decode();
 		}
-		if ( $this->description === null || $this->targets === null ) {
+		if ( !is_string( $this->description ) || !is_array( $this->targets ) ) {
 			return false;
 		}
 		foreach ( $this->targets as $target ) {
-			if ( !array_key_exists( 'title', $target ) ) {
+			if ( !is_array( $target ) || !array_key_exists( 'title', $target ) ) {
 				return false;
 			}
 		}
@@ -67,45 +67,71 @@ class MassMessageListContent extends TextContent {
 		$this->decoded = true;
 	}
 
-	//TODO: Change getHtml and the special page to fit the new schema
-	protected function getHtml() {
+	protected function fillParserOutput( Title $title, $revId, ParserOptions $options,
+		$generateHtml, ParserOutput &$output
+	) {
+		global $wgParser;
+
 		if ( !$this->validate() ) {
-			return '<p class="error">' . wfMessage( 'massmessage-content-invalid' )->text() . '</p>';
+			$output->setText(
+				'<p class="error">' . wfMessage( 'massmessage-content-invalid' )->text() . '</p>'
+			);
+			return;
 		}
 
-		$targets = $this->getTargets();
+		$output = $wgParser->parse( $this->getDescription(), $title, $options, true, true, $revId );
 
-		// Determine whether to print the "site" column.
-		$printSite = false;
+		if ( $generateHtml ) {
+			$output->setText( $output->getText() . $this->getTargetsHtml() );
+		} else {
+			$output->setText( '' );
+		}
+	}
+
+	protected function getTargetsHtml() {
+		$domains = $this->getTargetsByDomain();
+
+		// Determine whether there are targets on external wikis
+		$printSites = ( count( $domains ) === 1 && array_key_exists( 'local', $domains ) ) ?
+			false : true;
+
+		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->text() . "</h2>\n";
+
+		foreach ( $domains as $domain => $targets ) {
+			if ( $printSites ) {
+				if ( $domain === 'local' ) {
+					$html .= '<p>' . wfMessage( 'massmessage-content-pagesonwiki' )->text()
+						. "</p>\n";
+				} else {
+					$html .= '<p>' . wfMessage( 'massmessage-content-pagesondomain', $domain )->text()
+						. "</p>\n";
+				}
+			}
+
+			$html .= "<ul>\n";
+			foreach ( $targets as $target ) {
+				if ( $domain === 'local' ) {
+					$html .= '<li>' . Linker::link( Title::newFromText( $target ) ) . "</li>\n";
+				} else {
+					$html .= '<li>' . $target . "</li>\n";
+				}
+			}
+			$html .= "</ul>\n";
+		}
+
+		return $html;
+	}
+
+	protected function getTargetsByDomain() {
+		$targets = $this->getTargets();
+		$results = array();
 		foreach ( $targets as $target ) {
 			if ( array_key_exists( 'domain', $target ) ) {
-				$printSite = true;
-				break;
-			}
-		}
-
-		$rows = array();
-		foreach ( $targets as $target ) {
-			$row = array();
-
-			// Link to local pages.
-			if ( !array_key_exists( 'domain', $target ) ) {
-				$row[] = Linker::link( Title::newFromText( $target['title'] ) );
+				$results[$target['domain']][] = $target['title'];
 			} else {
-				$row[] = $target['title'];
+				$results['local'][] = $target['title'];
 			}
-
-			if ( $printSite ) {
-				$row[] = array_key_exists( 'domain', $target ) ? $target['domain'] : '';
-			}
-			$rows[] = $row;
 		}
-
-		$headers = array( wfMessage( 'massmessage-content-title' )->text() );
-		if ( $printSite ) {
-			$headers[] = wfMessage( 'massmessage-content-site' )->text();
-		}
-
-		return Xml::buildTable( $rows, array( 'class' => 'wikitable' ), $headers, false );
+		return $results;
 	}
 }
