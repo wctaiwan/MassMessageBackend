@@ -52,12 +52,15 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 				$fields['title']['default'] = $this->titleText;
 				$fields['title']['disabled'] = true;
 
-				// Set the default content.
-				$fields['content']['default'] = self::parseTargets(
-					Revision::newFromTitle(
-						Title::newFromText( $this->titleText )
-					)->getContent()->getTargets()
-				);
+				// Fill in existing description and targets.
+				$content = Revision::newFromTitle(
+					Title::newFromText( $this->titleText )
+				)->getContent();
+				$description = $content->getDescription();
+				$targets = $content->getTargets();
+				$fields['description']['default'] = ( $description !== null ) ? $description : '';
+				$fields['content']['default'] = ( $targets !== null ) ?
+					self::parseTargets( $targets ) : '';
 			}
 		}
 		return $fields;
@@ -91,7 +94,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			return Status::newFatal( 'massmessage-manage-nopermission' );
 		}
 
-		$jsonText = self::convertToJson( $data['content'] );
+		$jsonText = self::convertToJson( $data['description'], $data['content'] );
 		if ( !$jsonText ) {
 			return Status::newFatal( 'massmessage-manage-tojsonerror' );
 		}
@@ -112,9 +115,6 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	}
 
 	protected static function parseTargets( $targets ) {
-		if ( $targets === null ) {
-			return '';
-		}
 		$lines = array();
 		foreach ( $targets as $target ) {
 			if ( array_key_exists( 'domain', $target ) ) {
@@ -126,8 +126,8 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		return implode( "\n", $lines );
 	}
 
-	protected static function convertToJson( $textInput ) {
-		$lines = array_filter( explode( "\n", $textInput ), 'trim' ); // Array of non-empty lines
+	protected static function convertToJson( $description, $targetsText ) {
+		$lines = array_filter( explode( "\n", $targetsText ), 'trim' ); // Array of non-empty lines
 
 		$targets = array();
 		foreach ( $lines as $line ) {
@@ -157,7 +157,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		$targets = array_map( 'unserialize', array_unique( array_map( 'serialize', $targets ) ) );
 		usort( $targets, 'self::compareTargets' );
 
-		return FormatJson::encode( $targets );
+		return FormatJson::encode( array( 'description' => $description, 'targets' => $targets ) );
 	}
 
 	protected static function compareTargets( $a, $b ) {

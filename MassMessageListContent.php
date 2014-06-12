@@ -2,11 +2,24 @@
 
 class MassMessageListContent extends TextContent {
 
+	/**
+	 * @var string|null
+	 * Description wikitext
+	 */
 	protected $description;
 
+
+	/**
+	 * @var array|null
+	 * Array of target pages
+	 */
 	protected $targets;
 
-	protected $decoded;
+	/**
+	 * @var bool
+	 * Whether $description and $targets have been populated
+	 */
+	protected $decoded = false;
 
 	public function __construct( $text ) {
 		parent::__construct( $text, 'MassMessageListContent' );
@@ -46,9 +59,11 @@ class MassMessageListContent extends TextContent {
 			return;
 		}
 		$data = FormatJson::decode( $this->getNativeData(), true );
-		$this->description = array_key_exists( 'description', $data ) ?
-			$data['description'] : null;
-		$this->targets = array_key_exists( 'targets', $data ) ? $data['targets'] : null;
+		if ( is_array( $data ) ) {
+			$this->description = array_key_exists( 'description', $data ) ?
+				$data['description'] : null;
+			$this->targets = array_key_exists( 'targets', $data ) ? $data['targets'] : null;
+		}
 		$this->decoded = true;
 	}
 
