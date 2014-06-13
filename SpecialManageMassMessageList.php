@@ -81,7 +81,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		} else {
 			$msgKey = 'massmessage-manage-invalidtitle';
 		}
-		return '<p>' . $this->msg( $msgKey )->text() . '</p>';
+		return '<p>' . $this->msg( $msgKey )->parsed() . '</p>';
 	}
 
 	public function onSubmit( array $data ) {
@@ -102,7 +102,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 
 		$result = WikiPage::factory( $title )->doEditContent(
 			$content,
-			$this->msg( 'massmessage-manage-editsummary' )->text()
+			$this->msg( 'massmessage-manage-editsummary' )->escaped()
 		);
 		if ( $result->isOK() ) {
 			$this->getOutput()->redirect( $title->getFullUrl() );

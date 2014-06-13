@@ -74,7 +74,7 @@ class MassMessageListContent extends TextContent {
 
 		if ( !$this->validate() ) {
 			$output->setText(
-				'<p class="error">' . wfMessage( 'massmessage-content-invalid' )->text() . '</p>'
+				'<p class="error">' . wfMessage( 'massmessage-content-invalid' )->parsed() . '</p>'
 			);
 			return;
 		}
@@ -95,15 +95,15 @@ class MassMessageListContent extends TextContent {
 		$printSites = ( count( $domains ) === 1 && array_key_exists( 'local', $domains ) ) ?
 			false : true;
 
-		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->text() . "</h2>\n";
+		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->parsed() . "</h2>\n";
 
 		foreach ( $domains as $domain => $targets ) {
 			if ( $printSites ) {
 				if ( $domain === 'local' ) {
-					$html .= '<p>' . wfMessage( 'massmessage-content-pagesonwiki' )->text()
+					$html .= '<p>' . wfMessage( 'massmessage-content-pagesonwiki' )->parsed()
 						. "</p>\n";
 				} else {
-					$html .= '<p>' . wfMessage( 'massmessage-content-pagesondomain', $domain )->text()
+					$html .= '<p>' . wfMessage( 'massmessage-content-pagesondomain', $domain )->parsed()
 						. "</p>\n";
 				}
 			}
