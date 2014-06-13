@@ -74,7 +74,7 @@ class MassMessageListContent extends TextContent {
 
 		if ( !$this->validate() ) {
 			$output->setText(
-				'<p class="error">' . wfMessage( 'massmessage-content-invalid' )->parsed() . '</p>'
+				'<p class="error">' . wfMessage( 'massmessage-content-invalid' )->parse() . '</p>'
 			);
 			return;
 		}
@@ -89,13 +89,13 @@ class MassMessageListContent extends TextContent {
 	}
 
 	protected function getTargetsHtml() {
-		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->parsed() . "</h2>\n";
+		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->parse() . "</h2>\n";
 
 		$domains = $this->getTargetsByDomain();
 
 		// If the list is empty
 		if ( count( $domains ) === 0 ) {
-			$html .= '<p>' . wfMessage( 'massmessage-content-empty' )->parsed() . "</p>\n";
+			$html .= '<p>' . wfMessage( 'massmessage-content-empty' )->parse() . "</p>\n";
 			return $html;
 		}
 
@@ -106,10 +106,10 @@ class MassMessageListContent extends TextContent {
 		foreach ( $domains as $domain => $targets ) {
 			if ( $printSites ) {
 				if ( $domain === 'local' ) {
-					$html .= '<p>' . wfMessage( 'massmessage-content-pagesonwiki' )->parsed()
+					$html .= '<p>' . wfMessage( 'massmessage-content-pagesonwiki' )->parse()
 						. "</p>\n";
 				} else {
-					$html .= '<p>' . wfMessage( 'massmessage-content-pagesondomain', $domain )->parsed()
+					$html .= '<p>' . wfMessage( 'massmessage-content-pagesondomain', $domain )->parse()
 						. "</p>\n";
 				}
 			}

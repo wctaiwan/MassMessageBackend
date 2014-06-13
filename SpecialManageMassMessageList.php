@@ -81,7 +81,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		} else {
 			$msgKey = 'massmessage-manage-invalidtitle';
 		}
-		return '<p>' . $this->msg( $msgKey )->parsed() . '</p>';
+		return '<p>' . $this->msg( $msgKey )->parse() . '</p>';
 	}
 
 	public function onSubmit( array $data ) {
