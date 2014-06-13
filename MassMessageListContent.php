@@ -109,7 +109,8 @@ class MassMessageListContent extends TextContent {
 					$html .= '<p>' . wfMessage( 'massmessage-content-pagesonwiki' )->parse()
 						. "</p>\n";
 				} else {
-					$html .= '<p>' . wfMessage( 'massmessage-content-pagesondomain', $domain )->parse()
+					$html .= '<p>'
+						. wfMessage( 'massmessage-content-pagesondomain', $domain )->parse()
 						. "</p>\n";
 				}
 			}

@@ -90,7 +90,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			return Status::newFatal( 'massmessage-manage-invalidtitle' );
 		} else if ( $title->exists() && $this->titleText === '' ) {
 			return Status::newFatal( 'massmessage-manage-exists' );
-		} else if ( !$title->userCan( 'edit' ) || !$title->exists() && !$title->userCan( 'create' ) ) {
+		} else if ( !$title->userCan( 'edit' )
+			|| !$title->exists() && !$title->userCan( 'create' )
+		) {
 			return Status::newFatal( 'massmessage-manage-nopermission' );
 		}
 
