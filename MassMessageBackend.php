@@ -17,12 +17,16 @@ $wgExtensionCredits['specialpage'][] = array(
 $wgMessagesDirs['MassMessageBackend'] = __DIR__ . '/i18n';
 
 // Classes
+$wgAutoloadClasses['MassMessageBackendHooks'] = __DIR__ . '/MassMessageBackend.hooks.php';
 $wgAutoloadClasses['SpecialManageMassMessageList'] = __DIR__ . '/SpecialManageMassMessageList.php';
 $wgAutoloadClasses['MassMessageListContent'] = __DIR__ . '/MassMessageListContent.php';
 $wgAutoloadClasses['MassMessageListContentHandler'] = __DIR__ . '/MassMessageListContentHandler.php';
 
 // ContentHandler
 $wgContentHandlers['MassMessageListContent'] = 'MassMessageListContentHandler';
+
+// Hooks
+$wgHooks['SkinTemplateNavigation'][] = 'MassMessageBackendHooks::onSkinTemplateNavigation';
 
 // Special page
 $wgSpecialPages['ManageMassMessageList'] = 'SpecialManageMassMessageList';
