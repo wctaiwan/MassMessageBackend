@@ -89,13 +89,19 @@ class MassMessageListContent extends TextContent {
 	}
 
 	protected function getTargetsHtml() {
+		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->parsed() . "</h2>\n";
+
 		$domains = $this->getTargetsByDomain();
 
-		// Determine whether there are targets on external wikis
+		// If the list is empty
+		if ( count( $domains ) === 0 ) {
+			$html .= '<p>' . wfMessage( 'massmessage-content-empty' )->parsed() . "</p>\n";
+			return $html;
+		}
+
+		// Determine whether there are targets on external wikis.
 		$printSites = ( count( $domains ) === 1 && array_key_exists( 'local', $domains ) ) ?
 			false : true;
-
-		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->parsed() . "</h2>\n";
 
 		foreach ( $domains as $domain => $targets ) {
 			if ( $printSites ) {
