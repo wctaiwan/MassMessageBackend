@@ -79,8 +79,18 @@ class MassMessageListContent extends TextContent {
 			return;
 		}
 
+		// Parse the description text.
 		$output = $wgParser->parse( $this->getDescription(), $title, $options, true, true, $revId );
 
+		// Update the links table.
+		$targets = $this->getTargets();
+		foreach ( $targets as $target ) {
+			if ( !array_key_exists( 'domain', $target ) ) {
+				$output->addLink( Title::newFromText( $target['title'] ) );
+			}
+		}
+
+		// Add the list content to the output, if needed.
 		if ( $generateHtml ) {
 			$output->setText( $output->getText() . $this->getTargetsHtml() );
 		} else {
