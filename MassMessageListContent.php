@@ -85,7 +85,7 @@ class MassMessageListContent extends TextContent {
 		// Update the links table.
 		$targets = $this->getTargets();
 		foreach ( $targets as $target ) {
-			if ( !array_key_exists( 'domain', $target ) ) {
+			if ( !array_key_exists( 'site', $target ) ) {
 				$output->addLink( Title::newFromText( $target['title'] ) );
 			}
 		}
@@ -101,33 +101,33 @@ class MassMessageListContent extends TextContent {
 	protected function getTargetsHtml() {
 		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->parse() . "</h2>\n";
 
-		$domains = $this->getTargetsByDomain();
+		$sites = $this->getTargetsBySite();
 
 		// If the list is empty
-		if ( count( $domains ) === 0 ) {
+		if ( count( $sites ) === 0 ) {
 			$html .= '<p>' . wfMessage( 'massmessage-content-empty' )->parse() . "</p>\n";
 			return $html;
 		}
 
 		// Determine whether there are targets on external wikis.
-		$printSites = ( count( $domains ) === 1 && array_key_exists( 'local', $domains ) ) ?
+		$printSites = ( count( $sites ) === 1 && array_key_exists( 'local', $sites ) ) ?
 			false : true;
 
-		foreach ( $domains as $domain => $targets ) {
+		foreach ( $sites as $site => $targets ) {
 			if ( $printSites ) {
-				if ( $domain === 'local' ) {
-					$html .= '<p>' . wfMessage( 'massmessage-content-pagesonwiki' )->parse()
+				if ( $site === 'local' ) {
+					$html .= '<p>' . wfMessage( 'massmessage-content-localpages' )->parse()
 						. "</p>\n";
 				} else {
 					$html .= '<p>'
-						. wfMessage( 'massmessage-content-pagesondomain', $domain )->parse()
+						. wfMessage( 'massmessage-content-pagesonsite', $site )->parse()
 						. "</p>\n";
 				}
 			}
 
 			$html .= "<ul>\n";
 			foreach ( $targets as $target ) {
-				if ( $domain === 'local' ) {
+				if ( $site === 'local' ) {
 					$html .= '<li>' . Linker::link( Title::newFromText( $target ) ) . "</li>\n";
 				} else {
 					$html .= '<li>' . $target . "</li>\n";
@@ -139,12 +139,12 @@ class MassMessageListContent extends TextContent {
 		return $html;
 	}
 
-	protected function getTargetsByDomain() {
+	protected function getTargetsBySite() {
 		$targets = $this->getTargets();
 		$results = array();
 		foreach ( $targets as $target ) {
-			if ( array_key_exists( 'domain', $target ) ) {
-				$results[$target['domain']][] = $target['title'];
+			if ( array_key_exists( 'site', $target ) ) {
+				$results[$target['site']][] = $target['title'];
 			} else {
 				$results['local'][] = $target['title'];
 			}

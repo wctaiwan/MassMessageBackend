@@ -119,8 +119,8 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	protected static function parseTargets( $targets ) {
 		$lines = array();
 		foreach ( $targets as $target ) {
-			if ( array_key_exists( 'domain', $target ) ) {
-				$lines[] = $target['title'] . '@' . $target['domain'];
+			if ( array_key_exists( 'site', $target ) ) {
+				$lines[] = $target['title'] . '@' . $target['site'];
 			} else {
 				$lines[] = $target['title'];
 			}
@@ -136,10 +136,10 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			$delimiterPos = strrpos( $line, '@' );
 			if ( $delimiterPos !== false ) {
 				$titleText = substr( $line, 0, $delimiterPos );
-				$domain = strtolower( substr( $line, $delimiterPos+1 ) );
+				$site = strtolower( substr( $line, $delimiterPos+1 ) );
 			} else {
 				$titleText = $line;
-				$domain = null;
+				$site = null;
 			}
 
 			$title = Title::newFromText( $titleText );
@@ -148,8 +148,8 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 			}
 			$titleText = $title->getPrefixedText(); // Use the canonical form.
 
-			if ( $domain ) {
-				$targets[] = array( 'title' => $titleText, 'domain' => $domain );
+			if ( $site ) {
+				$targets[] = array( 'title' => $titleText, 'site' => $site );
 			} else {
 				$targets[] = array( 'title' => $titleText );
 			}
@@ -163,14 +163,14 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	}
 
 	protected static function compareTargets( $a, $b ) {
-		if ( !array_key_exists( 'domain', $a ) && array_key_exists( 'domain', $b ) ) {
+		if ( !array_key_exists( 'site', $a ) && array_key_exists( 'site', $b ) ) {
 			return -1;
-		} else if ( array_key_exists( 'domain', $a ) && !array_key_exists( 'domain', $b ) ) {
+		} else if ( array_key_exists( 'site', $a ) && !array_key_exists( 'site', $b ) ) {
 			return 1;
-		} else if ( array_key_exists( 'domain', $a ) && array_key_exists( 'domain', $b )
-			&& $a['domain'] !== $b['domain']
+		} else if ( array_key_exists( 'site', $a ) && array_key_exists( 'site', $b )
+			&& $a['site'] !== $b['site']
 		) {
-			return strcmp( $a['domain'], $b['domain'] );
+			return strcmp( $a['site'], $b['site'] );
 		} else {
 			return strcmp( $a['title'], $b['title'] );
 		}
