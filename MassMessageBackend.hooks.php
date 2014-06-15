@@ -2,6 +2,12 @@
 
 class MassMessageBackendHooks {
 
+	/**
+	 * Override the Edit tab for delivery lists
+	 * @param SkinTemplate $sktemplaye
+	 * @param array $links
+	 * @return bool
+	 */
 	public static function onSkinTemplateNavigation( &$sktemplate, &$links ) {
 		$title = $sktemplate->getTitle();
 		if ( $title->getContentModel() === 'MassMessageListContent'

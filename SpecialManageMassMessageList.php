@@ -2,13 +2,25 @@
 
 class SpecialManageMassMessageList extends FormSpecialPage {
 
+	/**
+	 * The title parameter as a string
+	 * @var string
+	 */
 	protected $titleText;
+
+	/**
+	 * Whether the title is valid
+	 * @var bool
+	 */
 	protected $isTitleValid;
 
 	public function __construct() {
 		parent::__construct( 'ManageMassMessageList' );
 	}
 
+	/**
+	 * @param string $par
+	 */
 	protected function setParameter( $par ) {
 		if ( $par === null || $par === '' ) {
 			$this->titleText = '';
@@ -27,6 +39,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		}
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function getFormFields() {
 		$fields = array();
 
@@ -66,6 +81,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		return $fields;
 	}
 
+	/**
+	 * @param HTMLForm $form
+	 */
 	protected function alterForm( HTMLForm $form ) {
 		if ( $this->isTitleValid ) {
 			$form->setWrapperLegendMsg( 'managemassmessagelist' );
@@ -75,6 +93,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function preText() {
 		if ( $this->isTitleValid ) {
 			$msgKey = 'massmessage-manage-header';
@@ -84,6 +105,10 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		return '<p>' . $this->msg( $msgKey )->parse() . '</p>';
 	}
 
+	/**
+	 * @param array $data
+	 * @return Status
+	 */
 	public function onSubmit( array $data ) {
 		$title = Title::newFromText( $data['title'] );
 		if ( !$title ) {
@@ -116,6 +141,11 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		// No-op: We have already redirected.
 	}
 
+	/**
+	 * Parse array of targets for editing.
+	 * @var array $targets
+	 * @return string
+	 */
 	protected static function parseTargets( $targets ) {
 		$lines = array();
 		foreach ( $targets as $target ) {
@@ -128,6 +158,12 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		return implode( "\n", $lines );
 	}
 
+	/**
+	 * Parse user input and convert it to JSON format.
+	 * @param string $description
+	 * @param string $targetsText
+	 * @return string
+	 */
 	protected static function convertToJson( $description, $targetsText ) {
 		$lines = array_filter( explode( "\n", $targetsText ), 'trim' ); // Array of non-empty lines
 
@@ -162,6 +198,12 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		return FormatJson::encode( array( 'description' => $description, 'targets' => $targets ) );
 	}
 
+	/**
+	 * Helper function for convertToJson; compares two targets for ordering.
+	 * @param array $a
+	 * @paran array $b
+	 * @return int
+	 */
 	protected static function compareTargets( $a, $b ) {
 		if ( !array_key_exists( 'site', $a ) && array_key_exists( 'site', $b ) ) {
 			return -1;

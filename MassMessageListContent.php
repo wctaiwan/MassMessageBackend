@@ -3,28 +3,36 @@
 class MassMessageListContent extends TextContent {
 
 	/**
-	 * @var string|null
 	 * Description wikitext
+	 * @var string|null
 	 */
 	protected $description;
 
 
 	/**
-	 * @var array|null
 	 * Array of target pages
+	 * @var array|null
 	 */
 	protected $targets;
 
 	/**
-	 * @var bool
 	 * Whether $description and $targets have been populated
+	 * @var bool
 	 */
 	protected $decoded = false;
 
+	/**
+	 * @param string $text
+	 */
 	public function __construct( $text ) {
 		parent::__construct( $text, 'MassMessageListContent' );
 	}
 
+	/**
+	 * Decode and validate the contents.
+	 *
+	 * @return bool Whether the contents are valid
+	 */
 	public function validate() {
 		if ( !$this->decoded ) {
 			$this->decode();
@@ -40,6 +48,9 @@ class MassMessageListContent extends TextContent {
 		return true;
 	}
 
+	/**
+	 * @return string|null
+	 */
 	public function getDescription() {
 		if ( !$this->decoded ) {
 			$this->decode();
@@ -47,6 +58,9 @@ class MassMessageListContent extends TextContent {
 		return $this->description;
 	}
 
+	/**
+	 * @return array|null
+	 */
 	public function getTargets() {
 		if ( !$this->decoded ) {
 			$this->decode();
@@ -54,6 +68,9 @@ class MassMessageListContent extends TextContent {
 		return $this->targets;
 	}
 
+	/**
+	 * Decode the JSON contents and populate $description and $targets.
+	 */
 	protected function decode() {
 		if ( $this->decoded ) {
 			return;
@@ -67,6 +84,15 @@ class MassMessageListContent extends TextContent {
 		$this->decoded = true;
 	}
 
+	/**
+	 * Fill $output with information derived from the content.
+	 *
+	 * @param Title $title
+	 * @param int $revId
+	 * @param ParserOptions $options
+	 * @param bool $generateHtml
+	 * @param ParserOutput $output
+	 */
 	protected function fillParserOutput( Title $title, $revId, ParserOptions $options,
 		$generateHtml, ParserOutput &$output
 	) {
@@ -98,6 +124,12 @@ class MassMessageListContent extends TextContent {
 		}
 	}
 
+	/**
+	 * Helper function for fillParserOutput; return HTML for displaying the list of pages.
+	 * Note that the function assumes that the contents are valid.
+	 *
+	 * @return string
+	 */
 	protected function getTargetsHtml() {
 		$html = '<h2>' . wfMessage( 'massmessage-content-pages' )->parse() . "</h2>\n";
 
@@ -139,6 +171,12 @@ class MassMessageListContent extends TextContent {
 		return $html;
 	}
 
+	/**
+	 * Helper function for getTargetsHtml; return the array of targets sorted by site.
+	 * Note that the function assumes that the contents are valid.
+	 *
+	 * @return array
+	 */
 	protected function getTargetsBySite() {
 		$targets = $this->getTargets();
 		$results = array();
