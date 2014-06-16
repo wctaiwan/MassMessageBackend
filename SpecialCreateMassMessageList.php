@@ -75,7 +75,16 @@ class SpecialCreateMassMessageList extends FormSpecialPage {
 		// No-op: We have already redirected.
 	}
 
-	protected static function getContentOptions() {
-		return array();
+	protected function getContentOptions() {
+		$mapping = array(
+			'massmessage-create-empty' => 'empty',
+			'massmessage-create-import' => 'import',
+		);
+
+		$options = array();
+		foreach ( $mapping as $msgKey => $option ) {
+			$options[$this->msg( $msgKey )->escaped()] = $option;
+		}
+		return $options;
 	}
 }
