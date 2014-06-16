@@ -18,6 +18,7 @@ $wgMessagesDirs['MassMessageBackend'] = __DIR__ . '/i18n';
 
 // Classes
 $wgAutoloadClasses['MassMessageBackendHooks'] = __DIR__ . '/MassMessageBackend.hooks.php';
+$wgAutoloadClasses['SpecialCreateMassMessageList'] = __DIR__ . '/SpecialCreateMassMessageList.php';
 $wgAutoloadClasses['SpecialEditMassMessageList'] = __DIR__ . '/SpecialEditMassMessageList.php';
 $wgAutoloadClasses['MassMessageListContent'] = __DIR__ . '/MassMessageListContent.php';
 $wgAutoloadClasses['MassMessageListContentHandler'] = __DIR__ . '/MassMessageListContentHandler.php';
@@ -28,5 +29,6 @@ $wgContentHandlers['MassMessageListContent'] = 'MassMessageListContentHandler';
 // Hooks
 $wgHooks['SkinTemplateNavigation'][] = 'MassMessageBackendHooks::onSkinTemplateNavigation';
 
-// Special page
+// Special pages
+$wgSpecialPages['CreateMassMessageList'] = 'SpecialCreateMassMessageList';
 $wgSpecialPages['EditMassMessageList'] = 'SpecialEditMassMessageList';
