@@ -48,22 +48,34 @@ class SpecialCreateMassMessageList extends FormSpecialPage {
 	public function onSubmit( array $data ) {
 		$title = Title::newFromText( $data['title'] );
 		if ( !$title ) {
-			return Status::newFatal( 'massmessage-manage-invalidtitle' );
+			return Status::newFatal( 'massmessage-create-invalidtitle' );
 		} else if ( $title->exists() ) {
-			return Status::newFatal( 'massmessage-manage-exists' );
+			return Status::newFatal( 'massmessage-create-exists' );
 		} else if ( !$title->userCan( 'edit' ) || !$title->userCan( 'create' ) ) {
-			return Status::newFatal( 'massmessage-manage-nopermission' );
+			return Status::newFatal( 'massmessage-create-nopermission' );
+		}
+
+		if ( $data['content'] === 'import' ) {
+
+			// TODO: Implement importing from existing lists
+			$targets = array();
+
+		} else {
+			$targets = array();
 		}
 
 
-		// TODO: Add processing here.
-
-
-		$content = new MassMessageListContent( '' );
+		$jsonText = FormatJson::encode(
+			array( 'description' => $data['description'], 'targets' => $targets )
+		);
+		if ( !$jsonText ) {
+			return Status::newFatal( 'massmessage-create-tojsonerror' );
+		}
+		$content = new MassMessageListContent( $jsonText );
 
 		$result = WikiPage::factory( $title )->doEditContent(
 			$content,
-			$this->msg( 'massmessage-manage-editsummary' )->escaped()
+			$this->msg( 'massmessage-create-editsummary' )->escaped()
 		);
 		if ( $result->isOK() ) {
 			$this->getOutput()->redirect( $title->getFullUrl() );
