@@ -86,7 +86,6 @@ class MassMessageListContent extends TextContent {
 
 	/**
 	 * Fill $output with information derived from the content.
-	 *
 	 * @param Title $title
 	 * @param int $revId
 	 * @param ParserOptions $options
@@ -127,7 +126,6 @@ class MassMessageListContent extends TextContent {
 	/**
 	 * Helper function for fillParserOutput; return HTML for displaying the list of pages.
 	 * Note that the function assumes that the contents are valid.
-	 *
 	 * @return string
 	 */
 	protected function getTargetsHtml() {
@@ -174,7 +172,6 @@ class MassMessageListContent extends TextContent {
 	/**
 	 * Helper function for getTargetsHtml; return the array of targets sorted by site.
 	 * Note that the function assumes that the contents are valid.
-	 *
 	 * @return array
 	 */
 	protected function getTargetsBySite() {
