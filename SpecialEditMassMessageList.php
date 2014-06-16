@@ -1,6 +1,6 @@
 <?php
 
-class SpecialManageMassMessageList extends FormSpecialPage {
+class SpecialEditMassMessageList extends FormSpecialPage {
 
 	/**
 	 * The title parameter as a string
@@ -15,7 +15,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	protected $isTitleValid;
 
 	public function __construct() {
-		parent::__construct( 'ManageMassMessageList' );
+		parent::__construct( 'EditMassMessageList' );
 	}
 
 	/**
@@ -49,16 +49,16 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 		if ( $this->isTitleValid ) {
 			$fields['title'] = array(
 				'type' => 'text',
-				'label-message' => 'massmessage-manage-title',
+				'label-message' => 'massmessage-edit-title',
 			);
 			$fields['description'] = array(
 				'type' => 'textarea',
 				'rows' => 5,
-				'label-message' => 'massmessage-manage-description',
+				'label-message' => 'massmessage-edit-description',
 			);
 			$fields['content'] = array(
 				'type' => 'textarea',
-				'label-message' => 'massmessage-manage-content',
+				'label-message' => 'massmessage-edit-content',
 			);
 
 			// If modifying an existing list
@@ -86,7 +86,7 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	 */
 	protected function alterForm( HTMLForm $form ) {
 		if ( $this->isTitleValid ) {
-			$form->setWrapperLegendMsg( 'managemassmessagelist' );
+			$form->setWrapperLegendMsg( 'editmassmessagelist' );
 		} else { // Hide the form if the title is invalid.
 			$form->setWrapperLegend( false );
 			$form->suppressDefaultSubmit( true );
@@ -98,9 +98,9 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	 */
 	protected function preText() {
 		if ( $this->isTitleValid ) {
-			$msgKey = 'massmessage-manage-header';
+			$msgKey = 'massmessage-edit-header';
 		} else {
-			$msgKey = 'massmessage-manage-invalidtitle';
+			$msgKey = 'massmessage-edit-invalidtitle';
 		}
 		return '<p>' . $this->msg( $msgKey )->parse() . '</p>';
 	}
@@ -112,24 +112,24 @@ class SpecialManageMassMessageList extends FormSpecialPage {
 	public function onSubmit( array $data ) {
 		$title = Title::newFromText( $data['title'] );
 		if ( !$title ) {
-			return Status::newFatal( 'massmessage-manage-invalidtitle' );
+			return Status::newFatal( 'massmessage-edit-invalidtitle' );
 		} else if ( $title->exists() && $this->titleText === '' ) {
-			return Status::newFatal( 'massmessage-manage-exists' );
+			return Status::newFatal( 'massmessage-edit-exists' );
 		} else if ( !$title->userCan( 'edit' )
 			|| !$title->exists() && !$title->userCan( 'create' )
 		) {
-			return Status::newFatal( 'massmessage-manage-nopermission' );
+			return Status::newFatal( 'massmessage-edit-nopermission' );
 		}
 
 		$jsonText = self::convertToJson( $data['description'], $data['content'] );
 		if ( !$jsonText ) {
-			return Status::newFatal( 'massmessage-manage-tojsonerror' );
+			return Status::newFatal( 'massmessage-edit-tojsonerror' );
 		}
 		$content = new MassMessageListContent( $jsonText );
 
 		$result = WikiPage::factory( $title )->doEditContent(
 			$content,
-			$this->msg( 'massmessage-manage-editsummary' )->escaped()
+			$this->msg( 'massmessage-edit-editsummary' )->escaped()
 		);
 		if ( $result->isOK() ) {
 			$this->getOutput()->redirect( $title->getFullUrl() );

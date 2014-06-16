@@ -4,19 +4,19 @@
 			"wctaiwan"
 		]
 	},
-	"managemassmessagelist": "Manage MassMessage list",
+	"editmassmessagelist": "Edit MassMessage delivery list",
 	"massmessage-content-invalid": "This page does not contain a valid MassMessage delivery list.",
 	"massmessage-content-pages": "Pages in this list",
 	"massmessage-content-empty": "There are no pages in this list.",
 	"massmessage-content-pagesonsite": "Pages on $1:",
 	"massmessage-content-localpages": "Pages on this wiki:",
-	"massmessage-manage-title": "Title:",
-	"massmessage-manage-description": "Description:",
-	"massmessage-manage-content": "Content:",
-	"massmessage-manage-header": "Use this form to create or modify delivery lists for the MassMessage extension. List one title per line, and use title@domain (e.g. User talk:Example@en.wikipedia.org) to specify a page on a different wiki, if cross-wiki delivery is enabled.",
-	"massmessage-manage-invalidtitle": "The specified title is invalid.",
-	"massmessage-manage-exists": "A page already exists at the specified title.",
-	"massmessage-manage-nopermission": "You do not have permission to create or edit the list.",
-	"massmessage-manage-editsummary": "Updating MassMessage list",
-	"massmessage-manage-tojsonerror": "The list could not be encoded for storage."
+	"massmessage-edit-title": "Title:",
+	"massmessage-edit-description": "Description:",
+	"massmessage-edit-content": "Content:",
+	"massmessage-edit-header": "List one title per line, and use title@domain (e.g. User talk:Example@en.wikipedia.org) to specify a page on a different wiki, if cross-wiki delivery is enabled.",
+	"massmessage-edit-invalidtitle": "The specified title is invalid.",
+	"massmessage-edit-exists": "A page already exists at the specified title.",
+	"massmessage-edit-nopermission": "You do not have permission to create or edit the list.",
+	"massmessage-edit-editsummary": "Updating MassMessage list",
+	"massmessage-edit-tojsonerror": "The list could not be encoded for storage."
 }
