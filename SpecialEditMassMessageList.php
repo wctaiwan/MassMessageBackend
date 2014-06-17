@@ -25,6 +25,7 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 			$this->errorMsgKey = 'massmessage-edit-invalidtitle';
 		} else {
 			$title = Title::newFromText( $par );
+
 			if ( !$title
 				|| !$title->exists()
 				|| !$title->hasContentModel( 'MassMessageListContent' )
@@ -42,6 +43,8 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 	 * @return array
 	 */
 	protected function getFormFields() {
+
+		// Show a hidden empty form if the title is invalid.
 		if ( !$this->title ) {
 			return array();
 		}
@@ -100,6 +103,10 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 	 * @return Status
 	 */
 	public function onSubmit( array $data ) {
+		if ( !$this->title ) {
+			return Status::newFatal( 'massmessage-edit-invalidtitle' );
+		}
+
 		$jsonText = self::convertToJson( $data['description'], $data['content'] );
 		if ( !$jsonText ) {
 			return Status::newFatal( 'massmessage-edit-tojsonerror' );
@@ -178,7 +185,7 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 	}
 
 	/**
-	 * Helper function for convertToJson; compares two targets for ordering.
+	 * Helper function for convertToJson; compare two targets for ordering.
 	 * @param array $a
 	 * @paran array $b
 	 * @return int
