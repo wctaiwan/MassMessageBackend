@@ -10,7 +10,7 @@ class MassMessageBackendHooks {
 	 */
 	public static function onSkinTemplateNavigation( &$sktemplate, &$links ) {
 		$title = $sktemplate->getTitle();
-		if ( $title->getContentModel() === 'MassMessageListContent'
+		if ( $title->hasContentModel( 'MassMessageListContent' )
 			&& array_key_exists( 'edit', $links['views'] )
 		) {
 			$links['views']['edit']['href'] = SpecialPage::getTitleFor(
