@@ -23,7 +23,7 @@ class SpecialCreateMassMessageList extends FormSpecialPage {
 			'content' => array(
 				'type' => 'radio',
 				'options' => $this->getContentOptions(),
-				'default' => 'empty',
+				'default' => 'new',
 				'label-message' => 'massmessage-create-content',
 			),
 			'source' => array(
@@ -87,9 +87,13 @@ class SpecialCreateMassMessageList extends FormSpecialPage {
 		// No-op: We have already redirected.
 	}
 
+	/**
+	 * Build and return the aossociative array for the content radio button field.
+	 * @return array
+	 */
 	protected function getContentOptions() {
 		$mapping = array(
-			'massmessage-create-empty' => 'empty',
+			'massmessage-create-new' => 'new',
 			'massmessage-create-import' => 'import',
 		);
 
