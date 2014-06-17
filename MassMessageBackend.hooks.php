@@ -14,7 +14,7 @@ class MassMessageBackendHooks {
 			&& array_key_exists( 'edit', $links['views'] )
 		) {
 			$links['views']['edit']['href'] = SpecialPage::getTitleFor(
-				'ManageMassMessageList', $title
+				'EditMassMessageList', $title
 			)->getFullUrl();
 		}
 		return true;

@@ -3,16 +3,15 @@
 class SpecialEditMassMessageList extends FormSpecialPage {
 
 	/**
-	 * The title parameter as a string
-	 * @var string
+	 * @var Title|null
 	 */
-	protected $titleText;
+	protected $title;
 
 	/**
-	 * Whether the title is valid
-	 * @var bool
+	 * The message key for the error encountered while parsing the title, if any.
+	 * @var string|null
 	 */
-	protected $isTitleValid;
+	protected $errorMsgKey;
 
 	public function __construct() {
 		parent::__construct( 'EditMassMessageList' );
@@ -23,18 +22,18 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 	 */
 	protected function setParameter( $par ) {
 		if ( $par === null || $par === '' ) {
-			$this->titleText = '';
-			$this->isTitleValid = true;
+			$this->errorMsgKey = 'massmessage-edit-invalidtitle';
 		} else {
 			$title = Title::newFromText( $par );
-
-			if ( $title !== null && $title->exists()
-				&& $title->hasContentModel( 'MassMessageListContent' )
+			if ( !$title
+				|| !$title->exists()
+				|| !$title->hasContentModel( 'MassMessageListContent' )
 			) {
-				$this->titleText = $title->getPrefixedText(); // Use the canonical form.
-				$this->isTitleValid = true;
+				$this->errorMsgKey = 'massmessage-edit-invalidtitle';
+			} else if ( !$title->userCan( 'edit' ) ) {
+				$this->errorMsgKey = 'massmessage-edit-nopermission';
 			} else {
-				$this->isTitleValid = false;
+				$this->title = $title;
 			}
 		}
 	}
@@ -43,49 +42,40 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 	 * @return array
 	 */
 	protected function getFormFields() {
-		$fields = array();
+		if ( !$this->title ) {
+			return array();
+		}
 
-		// If the title is valid or empty
-		if ( $this->isTitleValid ) {
-			$fields['title'] = array(
+		$content = Revision::newFromTitle( $this->title )->getContent();
+		$description = $content->getDescription();
+		$targets = $content->getTargets();
+
+		return array(
+			'title' => array(
 				'type' => 'text',
+				'disabled' => true,
+				'default' => $this->title->getPrefixedText(),
 				'label-message' => 'massmessage-edit-title',
-			);
-			$fields['description'] = array(
+			),
+			'description' => array(
 				'type' => 'textarea',
 				'rows' => 5,
+				'default' => ( $description !== null ) ? $description : '',
 				'label-message' => 'massmessage-edit-description',
-			);
-			$fields['content'] = array(
+			),
+			'content' => array(
 				'type' => 'textarea',
+				'default' => ( $targets !== null ) ? self::parseTargets( $targets ) : '',
 				'label-message' => 'massmessage-edit-content',
-			);
-
-			// If modifying an existing list
-			if ( $this->titleText !== '' ) {
-				// Set the title and prevent modification.
-				$fields['title']['default'] = $this->titleText;
-				$fields['title']['disabled'] = true;
-
-				// Fill in existing description and targets.
-				$content = Revision::newFromTitle(
-					Title::newFromText( $this->titleText )
-				)->getContent();
-				$description = $content->getDescription();
-				$targets = $content->getTargets();
-				$fields['description']['default'] = ( $description !== null ) ? $description : '';
-				$fields['content']['default'] = ( $targets !== null ) ?
-					self::parseTargets( $targets ) : '';
-			}
-		}
-		return $fields;
+			),
+		);
 	}
 
 	/**
 	 * @param HTMLForm $form
 	 */
 	protected function alterForm( HTMLForm $form ) {
-		if ( $this->isTitleValid ) {
+		if ( $this->title ) {
 			$form->setWrapperLegendMsg( 'editmassmessagelist' );
 		} else { // Hide the form if the title is invalid.
 			$form->setWrapperLegend( false );
@@ -97,10 +87,10 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 	 * @return string
 	 */
 	protected function preText() {
-		if ( $this->isTitleValid ) {
+		if ( $this->title ) {
 			$msgKey = 'massmessage-edit-header';
 		} else {
-			$msgKey = 'massmessage-edit-invalidtitle';
+			$msgKey = $this->errorMsgKey;
 		}
 		return '<p>' . $this->msg( $msgKey )->parse() . '</p>';
 	}
@@ -110,29 +100,18 @@ class SpecialEditMassMessageList extends FormSpecialPage {
 	 * @return Status
 	 */
 	public function onSubmit( array $data ) {
-		$title = Title::newFromText( $data['title'] );
-		if ( !$title ) {
-			return Status::newFatal( 'massmessage-edit-invalidtitle' );
-		} else if ( $title->exists() && $this->titleText === '' ) {
-			return Status::newFatal( 'massmessage-edit-exists' );
-		} else if ( !$title->userCan( 'edit' )
-			|| !$title->exists() && !$title->userCan( 'create' )
-		) {
-			return Status::newFatal( 'massmessage-edit-nopermission' );
-		}
-
 		$jsonText = self::convertToJson( $data['description'], $data['content'] );
 		if ( !$jsonText ) {
 			return Status::newFatal( 'massmessage-edit-tojsonerror' );
 		}
 		$content = new MassMessageListContent( $jsonText );
 
-		$result = WikiPage::factory( $title )->doEditContent(
+		$result = WikiPage::factory( $this->title )->doEditContent(
 			$content,
 			$this->msg( 'massmessage-edit-editsummary' )->escaped()
 		);
 		if ( $result->isOK() ) {
-			$this->getOutput()->redirect( $title->getFullUrl() );
+			$this->getOutput()->redirect( $this->title->getFullUrl() );
 		}
 		return $result;
 	}
